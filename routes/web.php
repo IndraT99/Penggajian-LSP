@@ -25,6 +25,16 @@ use App\Http\Controllers\Karyawan\KaryawanSlipGajiController;
 use App\Http\Controllers\Karyawan\PengajuanCutiController;
 use App\Http\Controllers\Karyawan\PengajuanLemburController;
 
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/setup-database', function () {
+    try {
+        Artisan::call('migrate --force');
+        return '✅ Database berhasil dimigrasi! Tabel penggajian sudah siap.';
+    } catch (\Exception $e) {
+        return '❌ Gagal migrasi: ' . $e->getMessage();
+    }
+});
 
 Route::get('/', function () {
     if (Auth::check()) {
