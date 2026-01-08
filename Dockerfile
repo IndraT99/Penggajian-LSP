@@ -1,48 +1,33 @@
-# Gunakan image PHP dengan Apache
 FROM php:8.2-apache
 
-# Install dependencies sistem yang diperlukan
+# 1. Install dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \
-    libonig-dev \
-    libxml2-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     zip \
     unzip \
-    curl
+    git \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install ekstensi PHP yang dibutuhkan Laravel
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-
-# Aktifkan Apache mod_rewrite
+# 2. Aktifkan mod_rewrite Apache (PENTING untuk Laravel)
 RUN a2enmod rewrite
 
-# Ubah DocumentRoot Apache ke folder /public
+# 3. Ubah DocumentRoot Apache ke folder /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-# PERBAIKAN DI SINI: Kita hanya ubah sites-available dan apache2.conf utama
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+RUN sed -ri -e 's!/var/www/php/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy file composer dari image composer resmi
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Copy seluruh file project ke dalam container
+# 4. Copy kodingan
 COPY . /var/www/html
 
-# Install dependensi via Composer
-RUN composer install --no-dev --optimize-autoloader
+# 5. Set working directory
+WORKDIR /var/www/html
 
-# Ubah permission folder storage dan bootstrap cache
+# 6. Beri izin akses folder storage
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
 EXPOSE 80
-
-# Jalankan Apache
 CMD ["apache2-foreground"]
