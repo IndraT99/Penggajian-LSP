@@ -4,40 +4,10 @@
 
 @section('content')
 
-<div class="row">
-    <!-- Kolom Kiri: Info Utama Karyawan -->
-    <div class="col-xl-4 col-lg-5 col-md-5">
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="d-flex flex-column align-items-center text-center">
-                    <div class="avatar avatar-xl mb-3">
-                        <span class="avatar-initial rounded-circle bg-primary">
-                            {{ strtoupper(substr($karyawan->nama_lengkap, 0, 2)) }}
-                        </span>
-                    </div>
-                    <h5 class="card-title mb-1">{{ $karyawan->nama_lengkap }}</h5>
-                    <p class="text-muted">{{ $karyawan->jabatan->nama_jabatan ?? 'Jabatan belum diatur' }}</p>
-                    <div>
-                        @if ($karyawan->status_karyawan == 'aktif')
-                        <span class="badge bg-label-success">Karyawan Aktif</span>
-                        @elseif ($karyawan->status_karyawan == 'non_aktif')
-                        <span class="badge bg-label-secondary">Non-Aktif</span>
-                        @else
-                        <span class="badge bg-label-danger">Resign</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-center mt-3">
-                        <a href="{{ route('hrd.karyawan.edit', $karyawan->id) }}" class="btn btn-primary me-2">
-                            <i class="bx bx-edit-alt me-1"></i> Edit
-                        </a>
-                        <a href="{{ route('hrd.karyawan.index') }}" class="btn btn-outline-secondary">
-                            <i class="bx bx-arrow-back me-1"></i> Kembali
-                        </a>
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
+    <div class="row">
+        <!-- Kolom Kiri: Info Utama Karyawan -->
+        <div class="col-xl-4 col-lg-5 col-md-5">
+            <div class="card mb-4">
                 <div class="info-container">
                     <h5 class="pb-2 border-bottom mb-4">Detail</h5>
                     <ul class="list-unstyled">
@@ -108,13 +78,13 @@
                             <h5 class="text-success">Tunjangan</h5>
                             <ul class="list-group">
                                 @forelse ($karyawan->components->where('tipe', 'allowance') as $component)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $component->nama_komponen }}
-                                    <span class="fw-bold">Rp
-                                        {{ number_format($component->pivot->jumlah, 0, ',', '.') }}</span>
-                                </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ $component->nama_komponen }}
+                                        <span class="fw-bold">Rp
+                                            {{ number_format($component->pivot->jumlah, 0, ',', '.') }}</span>
+                                    </li>
                                 @empty
-                                <li class="list-group-item text-muted">Tidak ada tunjangan.</li>
+                                    <li class="list-group-item text-muted">Tidak ada tunjangan.</li>
                                 @endforelse
                             </ul>
                         </div>
@@ -122,13 +92,13 @@
                             <h5 class="text-danger">Potongan</h5>
                             <ul class="list-group">
                                 @forelse ($karyawan->components->where('tipe', 'deduction') as $component)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $component->nama_komponen }}
-                                    <span class="fw-bold">Rp
-                                        {{ number_format($component->pivot->jumlah, 0, ',', '.') }}</span>
-                                </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ $component->nama_komponen }}
+                                        <span class="fw-bold">Rp
+                                            {{ number_format($component->pivot->jumlah, 0, ',', '.') }}</span>
+                                    </li>
                                 @empty
-                                <li class="list-group-item text-muted">Tidak ada potongan.</li>
+                                    <li class="list-group-item text-muted">Tidak ada potongan.</li>
                                 @endforelse
                             </ul>
                         </div>
@@ -149,29 +119,28 @@
                             </thead>
                             <tbody>
                                 @forelse ($karyawan->payrolls as $payroll)
-                                <tr>
-                                    <td>{{ $payroll->bulan }} / {{ $payroll->tahun }}</td>
-                                    <td><strong>Rp {{ number_format($payroll->gaji_bersih, 0, ',', '.') }}</strong></td>
-                                    <td>
-                                        <!-- Status Badge -->
-                                        @if ($payroll->status == 'paid') <span
-                                            class="badge bg-label-success">Paid</span>
-                                        @elseif ($payroll->status == 'approved_finance') <span
-                                            class="badge bg-label-info">Approved</span>
-                                        @elseif ($payroll->status == 'pending') <span
-                                            class="badge bg-label-warning">Pending</span>
-                                        @else <span class="badge bg-label-danger">Rejected</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('hrd.payroll.slip', $payroll->id) }}"
-                                            class="btn btn-xs btn-outline-primary">Lihat Slip</a>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ $payroll->bulan }} / {{ $payroll->tahun }}</td>
+                                        <td><strong>Rp {{ number_format($payroll->gaji_bersih, 0, ',', '.') }}</strong></td>
+                                        <td>
+                                            <!-- Status Badge -->
+                                            @if ($payroll->status == 'paid') <span class="badge bg-label-success">Paid</span>
+                                            @elseif ($payroll->status == 'approved_finance') <span
+                                                class="badge bg-label-info">Approved</span>
+                                            @elseif ($payroll->status == 'pending') <span
+                                                class="badge bg-label-warning">Pending</span>
+                                            @else <span class="badge bg-label-danger">Rejected</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('hrd.payroll.slip', $payroll->id) }}"
+                                                class="btn btn-xs btn-outline-primary">Lihat Slip</a>
+                                        </td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">Belum ada riwayat gaji.</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-center">Belum ada riwayat gaji.</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -194,5 +163,5 @@
     </div>
 
 
-</div>
+    </div>
 @endsection

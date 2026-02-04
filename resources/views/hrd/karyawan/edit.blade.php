@@ -4,7 +4,7 @@
 
 @section('content')
 
-<form action="{{ route('hrd.karyawan.update', $karyawan->id) }}" method="POST">
+<form action="{{ route('hrd.karyawan.update', $karyawan) }}" method="POST">
     @csrf
     @method('PUT')
     <!-- Method PUT untuk update -->
@@ -148,6 +148,54 @@
                         <label class="form-label" for="no_telepon">No. Telepon</label>
                         <input type="tel" class="form-control" id="no_telepon" name="no_telepon"
                             value="{{ old('no_telepon', $karyawan->no_telepon) }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Keuangan & Pajak</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="nama_bank">Nama Bank</label>
+                            <input type="text" class="form-control" id="nama_bank" name="nama_bank"
+                                value="{{ old('nama_bank', $karyawan->nama_bank) }}" placeholder="Contoh: BCA" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="nomor_rekening">Nomor Rekening</label>
+                            <input type="text" class="form-control" id="nomor_rekening" name="nomor_rekening"
+                                value="{{ old('nomor_rekening', $karyawan->nomor_rekening) }}" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="npwp">NPWP</label>
+                        <input type="text" class="form-control" id="npwp" name="npwp"
+                            value="{{ old('npwp', $karyawan->npwp) }}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ptkp_status">Status PTKP</label>
+                        <select id="ptkp_status" name="ptkp_status" class="form-select">
+                            <option value="">Pilih Status PTKP...</option>
+                            @foreach(['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3', 'K/I/0', 'K/I/1',
+                            'K/I/2', 'K/I/3'] as $ptkp)
+                            <option value="{{ $ptkp }}"
+                                {{ old('ptkp_status', $karyawan->ptkp_status) == $ptkp ? 'selected' : '' }}>{{ $ptkp }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="bpjs_kesehatan_no">No. BPJS Kesehatan</label>
+                        <input type="text" class="form-control" id="bpjs_kesehatan_no" name="bpjs_kesehatan_no"
+                            value="{{ old('bpjs_kesehatan_no', $karyawan->bpjs_kesehatan_no) }}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="bpjs_ketenagakerjaan_no">No. BPJS Ketenagakerjaan</label>
+                        <input type="text" class="form-control" id="bpjs_ketenagakerjaan_no"
+                            name="bpjs_ketenagakerjaan_no"
+                            value="{{ old('bpjs_ketenagakerjaan_no', $karyawan->bpjs_ketenagakerjaan_no) }}" />
                     </div>
                 </div>
             </div>

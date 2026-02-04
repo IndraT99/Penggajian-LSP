@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gajian-app
+    container_name: gajian-app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "${APP_NAME:-Laravel}"
+      APP_ENV: "${APP_ENV:-local}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG:-true}"
+      APP_URL: "${APP_URL:-http://localhost:8000}"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: "${DB_DATABASE:-gajian}"
+      DB_USERNAME: "${DB_USERNAME:-root}"
+      DB_PASSWORD: "${DB_PASSWORD:-root}"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor # Don't overwrite vendor from host
+    networks:
+      - gajian-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: gajian-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-gajian}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-root}"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - gajian-network
+    ports:
+      - "33061:3306" # Expose to host on different port if needed
+
+networks:
+  gajian-network:
+    driver: bridge

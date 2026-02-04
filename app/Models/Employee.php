@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\HashIdRoute;
 
     protected $fillable = [
         'user_id',
@@ -23,6 +23,12 @@ class Employee extends Model
         'gaji_pokok',
         'tanggal_bergabung',
         'status_karyawan',
+        'nama_bank',
+        'nomor_rekening',
+        'npwp',
+        'ptkp_status',
+        'bpjs_kesehatan_no',
+        'bpjs_ketenagakerjaan_no',
     ];
 
     protected function casts(): array
@@ -68,10 +74,10 @@ class Employee extends Model
     {
         return $this->hasMany(Payroll::class);
     }
-    
+
     public function components()
     {
         return $this->belongsToMany(PayrollComponent::class, 'employee_components')
-                    ->withPivot('jumlah');
+            ->withPivot('jumlah');
     }
 }

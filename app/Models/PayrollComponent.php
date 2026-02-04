@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PayrollComponent extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\HashIdRoute;
 
     protected $fillable = [
         'nama_komponen',
@@ -27,6 +27,6 @@ class PayrollComponent extends Model
     public function employees()
     {
         return $this->belongsToMany(Employee::class, 'employee_components')
-                    ->withPivot('jumlah');
+            ->withPivot('jumlah');
     }
 }

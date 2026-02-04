@@ -4,30 +4,36 @@ namespace App\Http\Controllers\HRD;
 
 use App\Http\Controllers\Controller;
 use App\Models\Leave;
-use App\Models\Employee; 
+use App\Models\Employee;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule; 
-use Illuminate\Support\Facades\Auth; 
-use Carbon\Carbon; 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class CutiController extends Controller
 {
     public function index(Request $request)
     {
         $status = $request->input('status');
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
-        $query = Leave::with('employee')
-                       ->whereYear('tanggal_mulai', $tahun)
-                       ->whereMonth('tanggal_mulai', $bulan);
-        
+        $query = Leave::with('employee');
+
+        if ($tahun) {
+            $query->whereYear('tanggal_mulai', $tahun);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tanggal_mulai', $bulan);
+        }
+
         if ($status) {
             $query->where('status', $status);
         }
 
         $leaves = $query->latest()->paginate(20);
-        
+
         return view('hrd.cuti.index', compact('leaves', 'status', 'bulan', 'tahun'));
     }
 
@@ -53,7 +59,7 @@ class CutiController extends Controller
 
         $approved_by_id = null;
         if ($validatedData['status'] == 'approved_hrd') {
-            $approved_by_id = Auth::id(); 
+            $approved_by_id = Auth::id();
         }
 
         Leave::create(array_merge($validatedData, [
@@ -62,7 +68,7 @@ class CutiController extends Controller
         ]));
 
         return redirect()->route('hrd.cuti.index')
-                         ->with('success', 'Data cuti berhasil ditambahkan.');
+            ->with('success', 'Data cuti berhasil ditambahkan.');
     }
 
     public function show(Leave $cuti)
@@ -91,13 +97,11 @@ class CutiController extends Controller
         $totalHari = $tanggalMulai->diffInDays($tanggalSelesai) + 1;
 
         $approved_by_id = $cuti->approved_by;
-        
+
         if ($validatedData['status'] == 'approved_hrd' && $cuti->status != 'approved_hrd') {
             $approved_by_id = Auth::id();
-        } 
-
-        elseif (in_array($validatedData['status'], ['pending', 'rejected'])) {
-            $approved_by_id = null; 
+        } elseif (in_array($validatedData['status'], ['pending', 'rejected'])) {
+            $approved_by_id = null;
         }
 
         $cuti->update(array_merge($validatedData, [
@@ -106,19 +110,19 @@ class CutiController extends Controller
         ]));
 
         return redirect()->route('hrd.cuti.index')
-                         ->with('success', 'Data cuti berhasil diperbarui.');
+            ->with('success', 'Data cuti berhasil diperbarui.');
     }
 
     public function destroy(Leave $cuti)
     {
         if ($cuti->status == 'approved_hrd') {
             return redirect()->route('hrd.cuti.index')
-                             ->with('error', 'Data cuti yang sudah disetujui tidak dapat dihapus. Silakan ubah statusnya menjadi "rejected" jika ingin membatalkan.');
+                ->with('error', 'Data cuti yang sudah disetujui tidak dapat dihapus. Silakan ubah statusnya menjadi "rejected" jika ingin membatalkan.');
         }
 
         $cuti->delete();
 
         return redirect()->route('hrd.cuti.index')
-                         ->with('success', 'Data cuti berhasil dihapus.');
+            ->with('success', 'Data cuti berhasil dihapus.');
     }
 }

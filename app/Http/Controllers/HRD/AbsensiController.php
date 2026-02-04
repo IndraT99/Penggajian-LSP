@@ -4,7 +4,7 @@ namespace App\Http\Controllers\HRD;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\Employee; 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -12,19 +12,25 @@ class AbsensiController extends Controller
 {
     public function index(Request $request)
     {
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
-        $query = Attendance::with('employee')
-                           ->whereYear('tanggal', $tahun)
-                           ->whereMonth('tanggal', $bulan);
-        
+        $query = Attendance::with('employee');
+
+        if ($tahun) {
+            $query->whereYear('tanggal', $tahun);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tanggal', $bulan);
+        }
+
         if ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
         }
 
         $attendances = $query->latest('tanggal')->paginate(30);
-        $employees = Employee::orderBy('nama_lengkap')->get(); 
+        $employees = Employee::orderBy('nama_lengkap')->get();
 
         return view('hrd.absensi.index', compact('attendances', 'employees', 'bulan', 'tahun'));
     }
@@ -57,7 +63,7 @@ class AbsensiController extends Controller
         Attendance::create($validatedData);
 
         return redirect()->route('hrd.absensi.index')
-                         ->with('success', 'Data absensi berhasil ditambahkan.');
+            ->with('success', 'Data absensi berhasil ditambahkan.');
     }
 
     public function show(Attendance $absensi)
@@ -93,7 +99,7 @@ class AbsensiController extends Controller
         $absensi->update($validatedData);
 
         return redirect()->route('hrd.absensi.index')
-                         ->with('success', 'Data absensi berhasil diperbarui.');
+            ->with('success', 'Data absensi berhasil diperbarui.');
     }
 
     public function destroy(Attendance $absensi)
@@ -101,6 +107,6 @@ class AbsensiController extends Controller
         $absensi->delete();
 
         return redirect()->route('hrd.absensi.index')
-                         ->with('success', 'Data absensi berhasil dihapus.');
+            ->with('success', 'Data absensi berhasil dihapus.');
     }
 }

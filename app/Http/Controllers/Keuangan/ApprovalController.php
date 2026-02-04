@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Keuangan;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payroll; 
+use App\Models\Payroll;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -11,14 +11,20 @@ class ApprovalController extends Controller
 {
     public function index(Request $request)
     {
-        $bulan = (int) $request->input('bulan', now()->month); 
-        $tahun = (int) $request->input('tahun', now()->year);
-        
-        $status = $request->input('status', 'pending');
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
-        $query = Payroll::with('employee:id,nama_lengkap,nik', 'generatedBy:id,name') 
-                        ->where('bulan', $bulan)
-                        ->where('tahun', $tahun);
+        $status = $request->input('status');
+
+        $query = Payroll::with('employee:id,nama_lengkap,nik', 'generatedBy:id,name');
+
+        if ($bulan) {
+            $query->where('bulan', $bulan);
+        }
+
+        if ($tahun) {
+            $query->where('tahun', $tahun);
+        }
 
         if ($status) {
             $query->where('status', $status);
@@ -29,29 +35,31 @@ class ApprovalController extends Controller
         return view('keuangan.approval.index', compact('payrolls', 'bulan', 'tahun', 'status'));
     }
 
-    public function show(Payroll $payroll)
+    public function show(Request $request, Payroll $payroll)
     {
         $payroll->load(['employee.jabatan', 'employee.divisi', 'details', 'generatedBy']);
 
-        return view('keuangan.approval.show', compact('payroll'));
+        $status = $request->input('status');
+
+        return view('keuangan.approval.show', compact('payroll', 'status'));
     }
 
     public function approve(Payroll $payroll)
     {
         if (!in_array($payroll->status, ['pending', 'rejected'])) {
             return redirect()->route('keuangan.approval.index')
-                             ->with('error', 'Gaji ini sudah diproses dan tidak bisa disetujui lagi.');
+                ->with('error', 'Gaji ini sudah diproses dan tidak bisa disetujui lagi.');
         }
 
         $payroll->update([
             'status' => 'approved_finance',
-            'finance_approved_by' => Auth::id(), 
-            'finance_approved_at' => now(), 
-            'catatan_revisi' => null 
+            'finance_approved_by' => Auth::id(),
+            'finance_approved_at' => now(),
+            'catatan_revisi' => null
         ]);
 
         return redirect()->route('keuangan.approval.index')
-                         ->with('success', "Payroll untuk {$payroll->employee->nama_lengkap} berhasil disetujui.");
+            ->with('success', "Payroll untuk {$payroll->employee->nama_lengkap} berhasil disetujui.");
     }
 
     public function reject(Request $request, Payroll $payroll)
@@ -64,17 +72,17 @@ class ApprovalController extends Controller
 
         if ($payroll->status !== 'pending') {
             return redirect()->route('keuangan.approval.index')
-                             ->with('error', 'Gaji ini sudah diproses dan tidak bisa ditolak.');
+                ->with('error', 'Gaji ini sudah diproses dan tidak bisa ditolak.');
         }
 
         $payroll->update([
             'status' => 'rejected',
             'finance_approved_by' => null,
             'finance_approved_at' => null,
-            'catatan_revisi' => $request->catatan_revisi 
+            'catatan_revisi' => $request->catatan_revisi
         ]);
 
         return redirect()->route('keuangan.approval.index')
-                         ->with('warning', "Payroll untuk {$payroll->employee->nama_lengkap} telah ditolak.");
+            ->with('warning', "Payroll untuk {$payroll->employee->nama_lengkap} telah ditolak.");
     }
 }

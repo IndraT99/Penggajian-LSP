@@ -13,7 +13,7 @@
                 </a>
             </div>
             <div class="card-body">
-                <form action="{{ route('admin.payroll-components.update', $payrollComponent->id) }}" method="POST">
+                <form action="{{ route('admin.payroll-components.update', $payrollComponent) }}" method="POST">
                     @csrf
                     @method('PUT')
 

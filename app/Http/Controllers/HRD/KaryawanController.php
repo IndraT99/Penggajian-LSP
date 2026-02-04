@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRD;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\Jabatan;
-use App\Models\Divisi; 
+use App\Models\Divisi;
 use App\Models\User;
 use App\Models\PayrollComponent;
 use Illuminate\Http\Request;
@@ -28,7 +28,7 @@ class KaryawanController extends Controller
         }
 
         $employees = $query->latest()->paginate(15);
-        
+
         $jabatans = Jabatan::orderBy('nama_jabatan')->get();
         $divisis = Divisi::orderBy('nama_divisi')->get();
 
@@ -39,9 +39,9 @@ class KaryawanController extends Controller
     {
         $jabatans = Jabatan::orderBy('nama_jabatan')->get();
         $divisis = Divisi::orderBy('nama_divisi')->get();
-        
+
         $users = User::whereDoesntHave('employee')->orderBy('name')->get();
-        
+
         $components = PayrollComponent::orderBy('tipe')->orderBy('nama_komponen')->get();
 
         return view('hrd.karyawan.create', compact('jabatans', 'divisis', 'users', 'components'));
@@ -57,13 +57,20 @@ class KaryawanController extends Controller
             'divisi_id' => 'required|exists:divisis,id',
             'tanggal_bergabung' => 'required|date',
             'status_karyawan' => ['required', Rule::in(['aktif', 'non_aktif', 'resign'])],
-            
+
             'user_id' => 'nullable|exists:users,id|unique:employees,user_id',
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
             'jenis_kelamin' => ['nullable', Rule::in(['L', 'P'])],
             'alamat' => 'nullable|string',
             'no_telepon' => 'nullable|string|max:20',
+
+            'nama_bank' => 'nullable|string|max:100',
+            'nomor_rekening' => 'nullable|string|max:50',
+            'npwp' => 'nullable|string|max:30',
+            'ptkp_status' => ['nullable', Rule::in(['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3', 'K/I/0', 'K/I/1', 'K/I/2', 'K/I/3'])],
+            'bpjs_kesehatan_no' => 'nullable|string|max:30',
+            'bpjs_ketenagakerjaan_no' => 'nullable|string|max:30',
 
             'components' => 'nullable|array',
             'components.*.id' => 'required|exists:payroll_components,id',
@@ -83,13 +90,13 @@ class KaryawanController extends Controller
         $employee->components()->sync($syncData);
 
         return redirect()->route('hrd.karyawan.index')
-                         ->with('success', 'Data Karyawan berhasil ditambahkan.');
+            ->with('success', 'Data Karyawan berhasil ditambahkan.');
     }
 
     public function show(Employee $karyawan)
     {
         $karyawan->load(['jabatan', 'divisi', 'user', 'components', 'payrolls', 'leaves', 'overtimes']);
-        
+
         return view('hrd.karyawan.show', compact('karyawan'));
     }
 
@@ -97,14 +104,14 @@ class KaryawanController extends Controller
     {
         $jabatans = Jabatan::orderBy('nama_jabatan')->get();
         $divisis = Divisi::orderBy('nama_divisi')->get();
-        
+
         $users = User::whereDoesntHave('employee')
-                     ->orWhere('id', $karyawan->user_id)
-                     ->orderBy('name')
-                     ->get();
-        
+            ->orWhere('id', $karyawan->user_id)
+            ->orderBy('name')
+            ->get();
+
         $components = PayrollComponent::orderBy('tipe')->orderBy('nama_komponen')->get();
-        
+
         $currentComponentData = $karyawan->components->pluck('pivot.jumlah', 'id');
 
         return view('hrd.karyawan.edit', compact('karyawan', 'jabatans', 'divisis', 'users', 'components', 'currentComponentData'));
@@ -120,13 +127,20 @@ class KaryawanController extends Controller
             'divisi_id' => 'required|exists:divisis,id',
             'tanggal_bergabung' => 'required|date',
             'status_karyawan' => ['required', Rule::in(['aktif', 'non_aktif', 'resign'])],
-            
+
             'user_id' => ['nullable', 'exists:users,id', Rule::unique('employees')->ignore($karyawan->id)],
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
             'jenis_kelamin' => ['nullable', Rule::in(['L', 'P'])],
             'alamat' => 'nullable|string',
             'no_telepon' => 'nullable|string|max:20',
+
+            'nama_bank' => 'nullable|string|max:100',
+            'nomor_rekening' => 'nullable|string|max:50',
+            'npwp' => 'nullable|string|max:30',
+            'ptkp_status' => ['nullable', Rule::in(['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3', 'K/I/0', 'K/I/1', 'K/I/2', 'K/I/3'])],
+            'bpjs_kesehatan_no' => 'nullable|string|max:30',
+            'bpjs_ketenagakerjaan_no' => 'nullable|string|max:30',
 
             'components' => 'nullable|array',
             'components.*.id' => 'required|exists:payroll_components,id',
@@ -146,26 +160,26 @@ class KaryawanController extends Controller
         $karyawan->components()->sync($syncData);
 
         return redirect()->route('hrd.karyawan.index')
-                         ->with('success', 'Data Karyawan berhasil diperbarui.');
+            ->with('success', 'Data Karyawan berhasil diperbarui.');
     }
 
     public function destroy(Employee $karyawan)
     {
-        
+
         try {
             $karyawan->delete();
-            
+
             return redirect()->route('hrd.karyawan.index')
-                             ->with('success', 'Data Karyawan berhasil dihapus.');
+                ->with('success', 'Data Karyawan berhasil dihapus.');
 
         } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() == 23000) { 
+            if ($e->getCode() == 23000) {
                 return redirect()->route('hrd.karyawan.index')
-                                 ->with('error', 'Karyawan tidak bisa dihapus karena memiliki riwayat data (cth: penggajian). Harap ubah statusnya menjadi "Non-Aktif" atau "Resign" saja.');
+                    ->with('error', 'Karyawan tidak bisa dihapus karena memiliki riwayat data (cth: penggajian). Harap ubah statusnya menjadi "Non-Aktif" atau "Resign" saja.');
             }
 
             return redirect()->route('hrd.karyawan.index')
-                             ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payroll extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\HashIdRoute;
 
     protected $fillable = [
         'employee_id',

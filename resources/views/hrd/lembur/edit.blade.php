@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="row">
-    <!-- Form -->
+
     <div class="col-lg-8 col-md-12">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -15,10 +15,10 @@
                 </a>
             </div>
             <div class="card-body">
-                <form action="{{ route('hrd.lembur.update', $lembur->id) }}" method="POST">
+                <form action="{{ route('hrd.lembur.update', $lembur) }}" method="POST">
                     @csrf
                     @method('PUT')
-                    <!-- Method PUT untuk update -->
+
 
                     <div class="mb-3">
                         <label class="form-label" for="employee_id">Karyawan <span class="text-danger">*</span></label>

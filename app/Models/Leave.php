@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HashIdRoute;
+
 class Leave extends Model
 {
-    use HasFactory;
+    use HasFactory, HashIdRoute;
 
     protected $fillable = [
         'employee_id',

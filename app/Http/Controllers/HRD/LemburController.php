@@ -4,30 +4,36 @@ namespace App\Http\Controllers\HRD;
 
 use App\Http\Controllers\Controller;
 use App\Models\Overtime;
-use App\Models\Employee; 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 
 class LemburController extends Controller
 {
     public function index(Request $request)
     {
         $status = $request->input('status');
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
+        $bulan = $request->input('bulan');
+        $tahun = $request->input('tahun');
 
-        $query = Overtime::with('employee') 
-                         ->whereYear('tanggal', $tahun)
-                         ->whereMonth('tanggal', $bulan);
-        
+        $query = Overtime::with('employee');
+
+        if ($tahun) {
+            $query->whereYear('tanggal', $tahun);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('tanggal', $bulan);
+        }
+
         if ($status) {
             $query->where('status', $status);
         }
 
         $overtimes = $query->latest('tanggal')->paginate(20);
-        
+
         return view('hrd.lembur.index', compact('overtimes', 'status', 'bulan', 'tahun'));
     }
 
@@ -51,11 +57,11 @@ class LemburController extends Controller
 
         $jamMulai = new Carbon($validatedData['jam_mulai']);
         $jamSelesai = new Carbon($validatedData['jam_selesai']);
-        $totalJam = $jamMulai->diffInHours($jamSelesai); 
+        $totalJam = $jamMulai->diffInHours($jamSelesai);
 
         $approved_by_id = null;
         if ($validatedData['status'] == 'approved_hrd') {
-            $approved_by_id = Auth::id(); 
+            $approved_by_id = Auth::id();
         }
 
         Overtime::create(array_merge($validatedData, [
@@ -64,7 +70,7 @@ class LemburController extends Controller
         ]));
 
         return redirect()->route('hrd.lembur.index')
-                         ->with('success', 'Data lembur berhasil ditambahkan.');
+            ->with('success', 'Data lembur berhasil ditambahkan.');
     }
 
     public function show(Overtime $lembur)
@@ -95,11 +101,10 @@ class LemburController extends Controller
         $totalJam = $jamMulai->diffInHours($jamSelesai);
 
         $approved_by_id = $lembur->approved_by;
-        
+
         if ($validatedData['status'] == 'approved_hrd' && $lembur->status != 'approved_hrd') {
             $approved_by_id = Auth::id();
-        } 
-        elseif (in_array($validatedData['status'], ['pending', 'rejected'])) {
+        } elseif (in_array($validatedData['status'], ['pending', 'rejected'])) {
             $approved_by_id = null;
         }
 
@@ -109,19 +114,19 @@ class LemburController extends Controller
         ]));
 
         return redirect()->route('hrd.lembur.index')
-                         ->with('success', 'Data lembur berhasil diperbarui.');
+            ->with('success', 'Data lembur berhasil diperbarui.');
     }
 
     public function destroy(Overtime $lembur)
     {
         if ($lembur->status == 'approved_hrd') {
             return redirect()->route('hrd.lembur.index')
-                             ->with('error', 'Data lembur yang sudah disetujui tidak dapat dihapus. Silakan ubah statusnya menjadi "rejected" jika ingin membatalkan.');
+                ->with('error', 'Data lembur yang sudah disetujui tidak dapat dihapus. Silakan ubah statusnya menjadi "rejected" jika ingin membatalkan.');
         }
 
         $lembur->delete();
 
         return redirect()->route('hrd.lembur.index')
-                         ->with('success', 'Data lembur berhasil dihapus.');
+            ->with('success', 'Data lembur berhasil dihapus.');
     }
 }

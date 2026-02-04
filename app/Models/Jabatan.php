@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Jabatan extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\HashIdRoute;
 
     protected $fillable = ['nama_jabatan', 'deskripsi'];
 
