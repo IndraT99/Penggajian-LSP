@@ -23,10 +23,10 @@ class DivisiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_divisi' => 'required|string|max:255|unique:divisis',
         ]);
-        Divisi::create($request->all());
+        Divisi::create($validated);
 
         return redirect()->route('admin.divisis.index')
                          ->with('success', 'Data Divisi berhasil ditambahkan.');
@@ -44,11 +44,11 @@ class DivisiController extends Controller
 
     public function update(Request $request, Divisi $divisi)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_divisi' => 'required|string|max:255|unique:divisis,nama_divisi,' . $divisi->id,
         ]);
 
-        $divisi->update($request->all());
+        $divisi->update($validated);
 
         return redirect()->route('admin.divisis.index')
                          ->with('success', 'Data Divisi berhasil diperbarui.');
