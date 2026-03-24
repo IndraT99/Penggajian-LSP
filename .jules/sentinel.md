@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing Authorization on Payroll PDF Generation
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on the `generatePDF` method in `KaryawanSlipGajiController`. The route allowed direct access to download a PDF of any payroll by just providing its ID, lacking the authorization check present in the `show` method.
+**Learning:** Even though object references might be obfuscated (e.g. hashed route keys), controllers must explicitly verify authorization for the authenticated user and validate object status (e.g., status is `approved_finance` or `paid`) for all endpoints that expose data, including download/PDF endpoints.
+**Prevention:** Always implement the same authorization and status checks on auxiliary endpoints (like downloads) as on the primary view (`show`) endpoint.
