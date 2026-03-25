@@ -1,0 +1,4 @@
+## 2024-05-24 - IDOR in PDF Download Route using Route Model Binding
+**Vulnerability:** The `/karyawan/slip-gaji/{payroll}/pdf` route using Route Model Binding allowed any authenticated user to download the PDF slip of any `Payroll` because the `generatePDF` method in `KaryawanSlipGajiController` lacked an authorization check to ensure the `$payroll->employee_id` matched the authenticated user.
+**Learning:** Even if an object is accessed directly via route model binding and the `show` view has authorization checks, related endpoints like PDF downloads must explicitly check authorization and ownership against the authenticated user.
+**Prevention:** Always add authorization checks (like verifying `$model->user_id === Auth::user()->id`) in controller methods returning direct object references or files, even if the primary view endpoint for that object already has them.
