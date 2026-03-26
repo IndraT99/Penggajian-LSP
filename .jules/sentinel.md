@@ -1,0 +1,4 @@
+## 2024-05-24 - Exposed Artisan Commands in Web Routes
+**Vulnerability:** Unauthenticated GET routes (`/setup-database` and `/fix-ssl`) were exposing powerful application maintenance commands including `Artisan::call('migrate --force')`, `Artisan::call('config:clear')`, and cache clearing.
+**Learning:** Developers sometimes leave convenient utility routes in the code after initial setup. This is a critical security risk because anyone can trigger these routes causing Denial of Service (DoS) by clearing caches or maliciously altering database schemas via migrations.
+**Prevention:** Never expose artisan commands or sensitive application state operations via web routes, particularly without authentication and authorization. Use CLI tools (like SSH or deployment scripts) for infrastructure and application maintenance, or robustly protect the endpoints with appropriate middleware and role checks.

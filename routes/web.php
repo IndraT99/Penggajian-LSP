@@ -25,18 +25,6 @@ use App\Http\Controllers\Karyawan\KaryawanSlipGajiController;
 use App\Http\Controllers\Karyawan\PengajuanCutiController;
 use App\Http\Controllers\Karyawan\PengajuanLemburController;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/setup-database', function () {
-    try {
-        Artisan::call('migrate --force');
-        return '✅ Database berhasil dimigrasi! Tabel penggajian sudah siap.';
-    } catch (\Exception $e) {
-        return '❌ Gagal migrasi: ' . $e->getMessage();
-    }
-});
-
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
@@ -95,20 +83,3 @@ Route::middleware('auth')->group(function () {
 
 });
 
-Route::get('/fix-ssl', function () {
-    // 1. Paksa bersihkan Cache Konfigurasi
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    
-    // 2. Cek apakah file sertifikat ada di server?
-    $certPath = '/etc/ssl/certs/ca-certificates.crt';
-    $certExists = file_exists($certPath) ? 'ADA ✅' : 'TIDAK ADA ❌';
-
-    // 3. Tes Koneksi Database
-    try {
-        DB::connection()->getPdo();
-        return "<h1>SUKSES! ✅</h1> <p>Sertifikat SSL: $certExists</p> <p>Koneksi ke TiDB Berhasil. Database siap.</p> <p>Silakan buka <a href='/setup-database'>/setup-database</a> sekarang.</p>";
-    } catch (\Exception $e) {
-        return "<h1>GAGAL ❌</h1> <p>Sertifikat SSL: $certExists</p> <p>Pesan Error: " . $e->getMessage() . "</p>";
-    }
-});
