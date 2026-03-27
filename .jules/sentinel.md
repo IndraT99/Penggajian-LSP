@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing Authorization in Route Model Binding PDF Generation
+**Vulnerability:** Found an Insecure Direct Object Reference (IDOR) vulnerability in `KaryawanSlipGajiController::generatePDF`. Even though route model binding (`Payroll $payroll`) implicitly fetches the record, there was no check verifying that the `$payroll->employee_id` matched the authenticated user's `employee_id`. A user could download any other user's salary slip PDF simply by changing the payroll ID in the URL.
+**Learning:** This codebase historically exhibits IDOR vulnerabilities, specifically on endpoints returning direct object references like PDF downloads. Route model binding does *not* automatically enforce authorization/ownership rules.
+**Prevention:** Always explicitly check authorization and ownership against the authenticated user within the controller method, even when using route model binding, especially for endpoints that return files or direct object references.
