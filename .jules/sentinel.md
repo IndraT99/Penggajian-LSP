@@ -1,0 +1,4 @@
+## 2024-03-28 - [Insecure Direct Object Reference on File Download Endpoints]
+**Vulnerability:** IDOR in `generatePDF` method within `KaryawanSlipGajiController`. The method accepted a bound `Payroll` model but failed to verify if the authenticated user owned the payroll, nor did it verify the payroll was in a finalized state before generating a PDF.
+**Learning:** Endpoints that generate or serve files (like PDFs) frequently bypass standard view authorization logic (e.g., in a `show` method) if implemented as a separate action. Developers may incorrectly assume that obscuring route IDs (HashIdRoute) is sufficient protection.
+**Prevention:** Always implement explicit ownership checks (`$model->user_id === Auth::id()`) and state verification directly within the controller method handling the file generation or download request, regardless of whether route keys are hashed or obfuscated.
