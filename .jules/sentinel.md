@@ -1,0 +1,4 @@
+## 2023-10-27 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download the payroll PDF of any other user by simply guessing or providing the payroll ID, as there was no ownership check.
+**Learning:** Even when using obfuscated route IDs (like `HashIdRoute`), direct object references in endpoints (especially those generating sensitive documents like PDFs) must always explicitly verify that the requested object belongs to the currently authenticated user. Obfuscation is not a substitute for proper authorization.
+**Prevention:** Always implement explicit authorization checks (e.g., comparing `$payroll->employee_id` with `Auth::user()->employee->id`) in controller methods that return or manipulate specific resources, regardless of the route key format.
