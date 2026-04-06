@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent IDOR in PDF Generation
+**Vulnerability:** Insecure Direct Object Reference (IDOR) where the `generatePDF` method in `KaryawanSlipGajiController` allowed direct object download without verifying that the authenticated user actually owns the payroll record or if the status of the record allows accessing it.
+**Learning:** Even if an object is accessed directly via route model binding, it is crucial to explicitly verify authorization, ownership, and allowed object statuses (like 'approved_finance', 'paid') against the authenticated user. Direct downloads are as sensitive as standard views.
+**Prevention:** Always implement explicit ownership checks (`$payroll->employee_id === $employee->id`) and state checks (`in_array($payroll->status, ['approved_finance', 'paid'])`) before allowing actions like PDF generation or download.
