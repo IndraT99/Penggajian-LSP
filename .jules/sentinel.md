@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent IDOR in PDF Generation
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF download endpoints. Users could access other users' payroll PDFs by altering the direct object reference (payroll ID) in the route because authorization checks were missing in the `generatePDF` method, even though they existed in the `show` method.
+**Learning:** Even if an object is accessed via route model binding and there are checks on the UI-view level, every endpoint (especially those returning files/PDFs directly) must explicitly verify ownership and authorization against the authenticated user.
+**Prevention:** Always implement `$this->getAuthenticatedEmployee()` and compare `$model->employee_id === $employee->id` (along with status checks like `approved_finance` or `paid`) on every action returning sensitive direct object references.
