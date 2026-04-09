@@ -23,6 +23,18 @@ class KaryawanSlipGajiController extends Controller
 
     public function generatePDF(Payroll $payroll)
     {
+        $employee = $this->getAuthenticatedEmployee();
+
+        // 🛡️ SECURITY: Prevent IDOR - Check authorization and ownership explicitly
+        if ($payroll->employee_id !== $employee->id) {
+            abort(403, 'Anda tidak memiliki izin untuk mengunduh slip gaji ini.');
+        }
+
+        // 🛡️ SECURITY: Ensure data is final/available before allowing download
+        if (!in_array($payroll->status, ['approved_finance', 'paid'])) {
+             abort(404, 'Slip gaji ini belum final atau tidak tersedia untuk diunduh.');
+        }
+
         $pdf = Pdf::loadView('karyawan.slip-gaji.pdf', ['payroll' => $payroll]);
 
         $pdf->setPaper('A4', 'portrait');

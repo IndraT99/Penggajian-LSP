@@ -1,0 +1,7 @@
+## 2024-05-18 - Missing Authorization in PDF Generation Endpoint
+
+**Vulnerability:** The application was missing explicit authorization checks in endpoints returning direct object references (specifically the `KaryawanSlipGajiController@generatePDF` method). It relied solely on route model binding (`$payroll`) without verifying if the authenticated user (`$employee`) had access to that specific `$payroll` model or if the `$payroll` was in a finalized state (`approved_finance` or `paid`). This resulted in an Insecure Direct Object Reference (IDOR) vulnerability, allowing an authenticated user to potentially download any other employee's salary slip by guessing or knowing the obfuscated route ID.
+
+**Learning:** Route obfuscation (like the `HashService` used in this app) is NOT a replacement for proper authorization. Even if object IDs are hashed/obfuscated in the route, an attacker who obtains a valid hashed ID can still access unauthorized resources if ownership checks are absent. Furthermore, when returning direct object references like generated PDFs, state verification (e.g., ensuring a payroll record is approved/paid) is crucial to prevent access to draft or unauthorized data.
+
+**Prevention:** Always explicitly check resource ownership against the currently authenticated user within controller methods, especially for actions like file downloads or viewing sensitive data. Never assume that route model binding handles authorization. Additionally, verify the state of stateful objects (like checking the `status` field) before allowing access.
