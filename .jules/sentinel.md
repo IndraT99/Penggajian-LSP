@@ -1,0 +1,4 @@
+## 2024-04-10 - [IDOR Vulnerability in Obfuscated Routes]
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` accepted a `Payroll` model via route model binding without validating if the payroll belonged to the authenticated employee. This allowed any employee to download any other employee's payroll PDF if they obtained the hashed route ID.
+**Learning:** Route obfuscation using `HashService` or `HashIdRoute` is not a substitute for proper authorization. It provides security through obscurity, which is insufficient for endpoints returning direct object references or performing sensitive actions.
+**Prevention:** Always implement explicit ownership checks (e.g., `if ($payroll->employee_id !== $employee->id)`) and state checks (e.g., `$payroll->status === 'paid'`) on endpoints returning direct object references, regardless of whether the route ID is obfuscated.
