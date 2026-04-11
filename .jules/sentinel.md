@@ -1,0 +1,4 @@
+## 2025-04-11 - Fix IDOR in PDF Generation
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download the payroll slip PDF of any other user because it did not verify the `employee_id` of the requested `Payroll` object against the authenticated user. It also failed to check the `$payroll->status`, allowing access to unapproved/draft slips.
+**Learning:** Even though models use `HashIdRoute` for obfuscated route keys, it does not prevent unauthorized access if the keys are known or guessed. Explicit ownership and state authorization checks must always be implemented on controllers returning direct object references or sensitive files.
+**Prevention:** Always verify object ownership (`$object->owner_id === $authenticatedUser->id`) and validate the object's state (e.g., `status === 'approved_finance'`) before returning sensitive data or performing actions, regardless of route obfuscation techniques.
