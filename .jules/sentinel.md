@@ -1,0 +1,4 @@
+## 2024-04-12 - Prevent Mass Assignment in Controllers
+**Vulnerability:** Use of `$request->all()` in controller store and update methods allows malicious users to modify unintended database fields (Mass Assignment), even if `$fillable` is not perfectly configured on models.
+**Learning:** Legacy Laravel code often relies on `$request->all()` right after inline validation, assuming model `$fillable` configuration provides sufficient protection. However, extracting exactly the validated data using `$validated = $request->validate(...)` is a much stronger "defense in depth" approach.
+**Prevention:** Always use the validated data array returned by inline validation (`$validated = $request->validate(...)`) or `$request->validated()` when using Form Request classes, instead of passing `$request->all()` directly to model create/update methods.
