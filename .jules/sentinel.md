@@ -1,0 +1,4 @@
+## 2024-04-13 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The KaryawanSlipGajiController@generatePDF method did not verify if the requested `Payroll` object belonged to the currently authenticated user before generating and serving the PDF, allowing any authenticated employee to download slip gaji of others if they knew the ID.
+**Learning:** Even when endpoints use route model binding, direct object references must always explicitly check for authorization and ownership, particularly for endpoints returning files or documents. Additionally, checking for correct state (e.g., approved/paid) is necessary to ensure draft documents aren't accessible.
+**Prevention:** Always include explicit authorization checks (e.g., comparing `$model->user_id` to `Auth::id()`) in controller methods returning direct object references, or use Policies/Gates for more robust access control.
