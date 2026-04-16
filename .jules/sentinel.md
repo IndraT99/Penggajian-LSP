@@ -1,0 +1,4 @@
+## 2026-04-16 - [CRITICAL] Prevent IDOR in PDF Downloads
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF download endpoint (`/karyawan/slip-gaji/{payroll}/pdf`). The `generatePDF` method allowed any authenticated user to download any other user's slip gaji PDF simply by altering the `payroll` ID in the route, since ownership and status were not verified.
+**Learning:** Obfuscation of IDs via route model binding (like `HashIdRoute` or `HashService`) is not a substitute for proper authorization. Endpoints returning direct resources, like file streams or downloads, must explicitly check resource ownership against the currently authenticated user.
+**Prevention:** Always implement explicit ownership (`$model->user_id === $currentUser->id`) and state checks (e.g., `$model->status === 'approved'`) inside the controller action before returning the resource or file.

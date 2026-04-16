@@ -13,6 +13,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        // The default route returns a 302 redirect to login when not authenticated.
+        $response->assertStatus(302);
     }
 }
