@@ -1,0 +1,5 @@
+
+## 2024-04-17 - Missing Authorization on PDF Download (IDOR)
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` accepted a `Payroll` model via route model binding without verifying if the requested payroll belonged to the authenticated user. Even though IDs were obfuscated using `HashService`, this still posed an Insecure Direct Object Reference (IDOR) vulnerability because an attacker could guess or leak an obfuscated ID to download another employee's payslip.
+**Learning:** Obfuscation (like hashed IDs) is not a substitute for proper authorization. Endpoints that return direct object references, such as PDF downloads, are just as sensitive as view endpoints and require explicit ownership and state checks.
+**Prevention:** Always ensure that direct object reference endpoints validate ownership against the authenticated user (e.g., checking `employee_id`) and confirm the object is in a valid state (e.g., status is `approved_finance` or `paid`) before processing the request.
