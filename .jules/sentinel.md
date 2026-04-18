@@ -1,0 +1,4 @@
+## 2025-02-27 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download any payslip PDF if they could guess the URL, as it relied on route model binding without verifying if the authenticated user owned the `Payroll` record or if its status was finalized.
+**Learning:** Endpoints that return files or alternative representations (like PDFs or exports) are often overlooked for authorization checks compared to standard HTML views. Even if IDs are obfuscated (e.g., using `HashIdRoute`), direct object references must still be protected by explicit ownership and state checks.
+**Prevention:** Always verify authorization (ownership) and object state (status) in every controller method that handles a direct object reference, regardless of the response format (HTML, JSON, PDF).
