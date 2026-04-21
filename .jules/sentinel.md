@@ -1,0 +1,4 @@
+## 2024-05-16 - Prevent IDOR on PDF Generation (Direct Object References)
+**Vulnerability:** IDOR in `KaryawanSlipGajiController@generatePDF`. An authenticated user could download other employees' salary slips by guessing or accessing the obfuscated route ID for `generatePDF()`, since there were no checks on object ownership or status.
+**Learning:** Obfuscated route keys (like those from `HashIdRoute` or `HashService`) only provide obscurity, not security. They are not a substitute for explicit authorization. Endpoints returning file streams (like PDF downloads) are especially prone to IDOR because they often bypass standard view-level authorization logic if developers assume the route is "hidden".
+**Prevention:** ALWAYS apply explicit authorization checks (e.g., `$payroll->employee_id === $employee->id`) and state validation checks (e.g., `$payroll->status === 'approved'`) inside the controller method, even if the route ID is obfuscated.
