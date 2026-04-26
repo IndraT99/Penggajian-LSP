@@ -1,0 +1,4 @@
+## 2025-04-26 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` returned a PDF stream for a `Payroll` object directly accessed via route model binding. It lacked explicit checks to verify if the authenticated user owned the `Payroll` record and whether its status was final (e.g., `approved_finance` or `paid`).
+**Learning:** Route model binding and obfuscated IDs (using `HashService` or similar) do not replace explicit authorization. Without these checks, any authenticated user who could guess or obtain a valid hashed payroll ID could download another employee's salary slip, even draft ones.
+**Prevention:** Always implement explicit ownership and state authorization checks on endpoints that return direct object references, especially for sensitive data like PDFs, regardless of whether the IDs are obfuscated.
