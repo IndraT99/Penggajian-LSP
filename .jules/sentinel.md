@@ -1,0 +1,4 @@
+## 2024-04-30 - [IDOR in PDF Generation]
+**Vulnerability:** Insecure Direct Object Reference (IDOR) allowed any authenticated user to download any other employee's payroll PDF (including draft/unapproved payrolls) by directly accessing the `generatePDF` route with a valid payroll ID, bypassing authorization checks that were present in the `show` method but missing in `generatePDF`.
+**Learning:** Even if an object is accessed directly via route model binding (and even if the IDs are obfuscated/hashed), endpoints that generate direct output (like PDF downloads) MUST have explicit authorization checks to verify ownership and state (e.g., status is `approved_finance` or `paid`). Obfuscated IDs can still be leaked or guessed.
+**Prevention:** Always ensure that methods handling direct object retrieval or file generation implement the same ownership and status authorization checks as the view/show methods.
