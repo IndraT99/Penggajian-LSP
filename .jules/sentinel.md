@@ -1,0 +1,4 @@
+## 2024-05-01 - Fix IDOR in PDF Download
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint `generatePDF()`. Although the route uses Route Model Binding, there was no check to verify if the requesting user owned the `Payroll` record or if its status allowed downloading.
+**Learning:** Route obfuscation (e.g., using `HashService` or `HashIdRoute` from traits) does not provide real access control. Hashed IDs can be guessed or leaked, so explicit ownership authorization must always be validated inside the controller methods, particularly for endpoints handling sensitive documents or object references.
+**Prevention:** Always verify `employee_id` against the authenticated user and validate object state (`status`) in controllers handling direct object downloads, even when IDs are obfuscated.
