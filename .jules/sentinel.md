@@ -1,0 +1,4 @@
+## 2024-05-02 - [IDOR in PDF Generation]
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF salary slip generation endpoint (`/karyawan/slip-gaji/{payroll}/pdf`). Any authenticated user could potentially view the salary slip of other employees if they knew or guessed the `payroll` ID. The application previously only checked the model's structure via route binding but not authorization.
+**Learning:** Route model binding does not perform authorization inherently. Even with obscured IDs, direct references to objects must always have ownership validation within the controller method. Also discovered that we must check the state (`status`) of objects before allowing access, otherwise draft/unapproved objects can be leaked.
+**Prevention:** Always implement an ownership check comparing the resource's owner ID (`employee_id`) to the authenticated user's ID (`Auth::user()->employee->id`). Enforce state checks before resource exposure.
