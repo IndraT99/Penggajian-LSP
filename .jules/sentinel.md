@@ -1,0 +1,4 @@
+## 2024-03-24 - [IDOR in PDF Generation]
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF download endpoint (`KaryawanSlipGajiController@generatePDF`). Direct route model binding was used without checking if the authenticated user owned the `Payroll` record or if the record was finalized.
+**Learning:** Obfuscation of IDs via Route-Model binding (`HashIdRoute`) does not substitute for explicitly verifying the resource ownership. If a resource uses ID obfuscation, it can still be enumerated or leaked, leading to an IDOR vulnerability.
+**Prevention:** Always verify resource ownership against the authenticated user and validate resource states explicitly within endpoints that return objects (like downloads or direct views), even if the route IDs are obfuscated.
