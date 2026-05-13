@@ -1,0 +1,4 @@
+## 2024-06-25 - [IDOR in PDF Generation]
+**Vulnerability:** The `/slip-gaji/{payroll}/pdf` endpoint (in `KaryawanSlipGajiController::generatePDF`) lacked ownership and state checks. Any authenticated user could download any user's payroll PDF if they knew the ID, even if the payroll was in a draft state.
+**Learning:** Route model binding and obfuscated IDs (`HashIdRoute`) are not sufficient protection for sensitive endpoints. Explicit authorization and state validation are crucial, especially for endpoints that return direct object references or files.
+**Prevention:** Always implement explicit ownership (`$payroll->employee_id !== $employee->id`) and state checks (`in_array($payroll->status, ['approved_finance', 'paid'])`) in controllers, even if route model binding is used. Never rely solely on ID obfuscation.
