@@ -1,0 +1,4 @@
+## 2024-05-17 - Insecure Direct Object Reference (IDOR) in PDF Generation
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download any payroll slip PDF by simply passing a valid payroll ID in the route, as it lacked ownership checks.
+**Learning:** Obfuscation (like the custom `HashService` in this app) or route model binding is not a substitute for explicit authorization checks. Endpoints returning direct object references or sensitive files must always verify the authenticated user's ownership of the requested resource.
+**Prevention:** Always implement explicit ownership checks (e.g., comparing `employee_id`) and status/state checks before allowing access to or downloading sensitive documents, even when route IDs are hashed.
