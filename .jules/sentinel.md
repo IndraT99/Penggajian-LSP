@@ -1,0 +1,4 @@
+## 2024-05-24 - Unprotected Utility Routes Executing Artisan Commands
+**Vulnerability:** Found utility routes (`/setup-database` and `/fix-ssl`) exposed publicly in `routes/web.php` that execute sensitive commands like `Artisan::call('migrate --force')` and `Artisan::call('cache:clear')` without authentication.
+**Learning:** Development, utility, and setup routes must never be deployed or merged into production environments without being wrapped in robust authentication and authorization middleware. Unprotected setup endpoints can lead to severe data loss (e.g. migrate:fresh), downtime, or unauthorized state modification.
+**Prevention:** Always encapsulate administrative or command-triggering routes within restrictive middleware groups (e.g., `['auth', 'role:admin']`), or better yet, move them to a separate routes file or CLI-only access (commands) rather than exposing them via web routes.
