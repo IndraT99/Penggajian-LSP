@@ -1,0 +1,4 @@
+## 2026-05-22 - IDOR in File Download Endpoints
+**Vulnerability:** The `generatePDF` endpoint for downloading salary slips (`Payroll`) did not check if the requested payroll record belonged to the authenticated user, nor did it verify the record's status. It directly passed the route model bound `Payroll` to the PDF generator.
+**Learning:** Endpoints that return direct files/objects (like PDFs or exports) often miss authorization checks because they don't render a traditional view. Even with obfuscated IDs (`HashService`), ownership and status checks must be strictly enforced on the actual resource being requested.
+**Prevention:** Always mirror the authorization logic from the `show` method to any corresponding file generation or download methods (`generatePDF`, `export`, etc.). Ensure that verifying ownership is done explicitly before processing the resource.
