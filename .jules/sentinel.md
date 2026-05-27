@@ -1,0 +1,4 @@
+## 2026-05-27 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download another user's payroll slip by guessing or knowing the obfuscated route ID, because it lacked authorization checks on `employee_id` and data state (`status`).
+**Learning:** Endpoints that generate files (like PDFs) or return direct object references are frequently overlooked for authorization, even when route model binding is used. Obfuscating route IDs (e.g. via `HashService`) is not a substitute for explicit access control checks.
+**Prevention:** Always implement explicit ownership (`$model->user_id === $currentUser->id`) and state checks (`in_array($model->status, ['approved', 'final'])`) on any endpoint returning a direct object reference, especially for file downloads.
