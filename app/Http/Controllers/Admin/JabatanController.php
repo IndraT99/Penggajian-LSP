@@ -21,12 +21,12 @@ class JabatanController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_jabatan' => 'required|string|max:255|unique:jabatans',
             'deskripsi' => 'nullable|string',
         ]);
 
-        Jabatan::create($request->all());
+        Jabatan::create($validated);
 
         return redirect()->route('admin.jabatans.index')
                          ->with('success', 'Data Jabatan berhasil ditambahkan.');
@@ -39,12 +39,12 @@ class JabatanController extends Controller
 
     public function update(Request $request, Jabatan $jabatan)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_jabatan' => 'required|string|max:255|unique:jabatans,nama_jabatan,'.$jabatan->id,
             'deskripsi' => 'nullable|string',
         ]);
 
-        $jabatan->update($request->all());
+        $jabatan->update($validated);
 
         return redirect()->route('admin.jabatans.index')
                          ->with('success', 'Data Jabatan berhasil diperbarui.');
