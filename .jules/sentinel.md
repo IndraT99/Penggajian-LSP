@@ -1,0 +1,4 @@
+## 2024-06-12 - Insecure Direct Object Reference in PDF generation endpoint
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint for payrolls. The endpoint took a parameter but did not verify that the authenticated user was authorized to view the requested record.
+**Learning:** Endpoints that generate or return files (like PDFs) are frequently overlooked for authorization checks, as developers focus on the view/generation logic. Even with route model binding, authorization checks are mandatory.
+**Prevention:** Always explicitly check ownership (`$payroll->employee_id === $employee->id`) and state (`$payroll->status`) against the authenticated user for all endpoints that return direct object references, including file downloads.
