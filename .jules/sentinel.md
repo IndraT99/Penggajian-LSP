@@ -1,0 +1,4 @@
+## 2024-06-13 - [Insecure Direct Object Reference on File Generation Endpoint]
+**Vulnerability:** IDOR vulnerability found in `KaryawanSlipGajiController@generatePDF` where a user could access other users' payroll PDFs or PDFs of unfinalized payrolls by directly manipulating the `payroll` ID in the route URL. The endpoint used route model binding but missed explicit authorization checks.
+**Learning:** Endpoints that generate or return files/PDFs based on direct object references are particularly susceptible to IDOR if developers assume that UI restrictions (like hiding links) are sufficient. Route model binding alone does not protect against unauthorized access.
+**Prevention:** Always implement explicit ownership checks (e.g., `$model->user_id === $authenticatedUser->id`) and state checks (e.g., verifying `$model->status` is finalized/approved) on endpoints returning direct object references, even when obfuscated IDs are used.
