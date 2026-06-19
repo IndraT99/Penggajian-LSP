@@ -1,0 +1,4 @@
+## 2024-06-19 - [IDOR in PDF Generation Endpoints]
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` accepted a `Payroll` model via route model binding without verifying if the requested payroll actually belonged to the authenticated user, or if its status was finalized.
+**Learning:** Endpoints returning files/PDFs are especially prone to this oversight as developers might focus on view generation rather than access control. Route obfuscation using `HashService` or `HashIdRoute` is not a substitute for proper authorization.
+**Prevention:** Always explicitly check authorization and ownership against the authenticated user for any model retrieved via route model binding, even if the route ID is obfuscated. Also, models representing stateful entities must have their status checked.
