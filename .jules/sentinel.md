@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix IDOR on Slip Gaji PDF generation
+**Vulnerability:** The `/karyawan/slip-gaji/{payroll}/pdf` endpoint (mapped to `generatePDF` in `KaryawanSlipGajiController`) lacked authorization checks, allowing any authenticated employee to download the payroll PDF of another employee if they knew or guessed the `{payroll}` ID. It also failed to check if the payroll was in a finalized state (`approved_finance` or `paid`), potentially leaking unapproved draft payroll data.
+**Learning:** Endpoints that generate and stream files/PDFs directly often overlook the authorization and object ownership checks that are present in standard view-rendering methods like `show`. Route model binding alone does not verify ownership.
+**Prevention:** Always implement explicit authorization checks (e.g., verifying `$model->user_id === Auth::id()`) and state/status checks on endpoints returning direct object references, especially file downloads or PDF streams.
