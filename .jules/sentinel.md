@@ -1,0 +1,4 @@
+## 2024-07-11 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `/karyawan/slip-gaji/{payroll}/pdf` endpoint (in `KaryawanSlipGajiController@generatePDF`) did not check if the authenticated employee owned the requested payroll record or if the payroll record was finalized before generating the PDF.
+**Learning:** Endpoints returning files or PDFs are often overlooked for access control checks because developers might focus solely on view generation. Route obfuscation (like `HashIdRoute` or `HashService` in this codebase) is not a substitute for proper authorization.
+**Prevention:** Always implement explicit ownership and state checks on endpoints returning direct object references or files, even if the route uses model binding or obfuscated IDs. Verify statuses (e.g., `approved_finance`, `paid`) to prevent unauthorized access to draft or unavailable records.
