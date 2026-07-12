@@ -1,0 +1,4 @@
+## 2024-05-15 - Missing Authorization on PDF Export Endpoint
+**Vulnerability:** IDOR (Insecure Direct Object Reference) on `KaryawanSlipGajiController::generatePDF`. Even if route model binding is used, checking ownership and record status is critical. Endpoints that generate exports like PDFs are especially prone to this oversight as developers focus on the view generation rather than access control.
+**Learning:** Route obfuscation or route model binding is not a substitute for proper authorization. Always explicitly verify that the authenticated user has permission to access the requested resource.
+**Prevention:** Implement explicit ownership checks and state checks (e.g., status is `approved_finance` or `paid`) on all endpoints returning direct object references or generated files. Use form requests, policies, or controller-level authorization checks consistently.
