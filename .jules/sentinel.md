@@ -1,0 +1,4 @@
+## 2024-05-24 - Missing Authorization on PDF Generation Endpoint
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint (`KaryawanSlipGajiController@generatePDF`). The endpoint accepted a route model bound `Payroll` ID and generated a PDF for it without verifying if the authenticated user (employee) was the owner of that payroll, or if the payroll was in a finalized state.
+**Learning:** Endpoints that return files (like PDFs) are often overlooked for authorization checks, as developers focus on the view generation logic rather than access control. Route obfuscation (`HashService`) is not a substitute for proper authorization.
+**Prevention:** Always implement explicit ownership (`employee_id`) and state (`status`) checks on endpoints returning direct object references or files, even if the route uses obfuscated IDs.
