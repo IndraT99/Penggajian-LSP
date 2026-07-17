@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing IDOR Checks on PDF Generation Endpoints
+**Vulnerability:** The `generatePDF` endpoint in `KaryawanSlipGajiController` returned PDF files directly via route model binding without checking if the authenticated user owned the record or if the record was in a finalized state.
+**Learning:** Endpoints that generate or return files (like PDFs) are often overlooked for standard authorization and state checks (e.g., draft vs. finalized) compared to standard HTML views, especially when route model binding makes the object implicitly available. Even with route obfuscation, this remains a risk.
+**Prevention:** Always explicitly verify ownership (e.g., `employee_id === Auth::user()->employee->id`) and valid resource state (e.g., `status IN ['approved_finance', 'paid']`) on any endpoint returning direct object references, including file downloads and PDF streams.
