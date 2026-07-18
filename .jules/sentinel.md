@@ -1,0 +1,4 @@
+## 2024-05-24 - Fix IDOR in PDF Generation Endpoint
+**Vulnerability:** IDOR vulnerability in `KaryawanSlipGajiController@generatePDF`. The endpoint generated a PDF for any `Payroll` object directly retrieved via route-model binding without checking if the authenticated user owned the `Payroll` or if the `Payroll` was in a final status (`approved_finance` or `paid`).
+**Learning:** Endpoints generating or returning files/PDFs using route model binding can easily be overlooked for authorization checks, leading to IDOR where an attacker can access other users' documents.
+**Prevention:** Always explicitly check authorization (ownership) and entity status against the authenticated user within the controller method, even when using route model binding, particularly for file/document generation endpoints.
