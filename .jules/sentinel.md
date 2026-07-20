@@ -1,0 +1,4 @@
+## 2024-07-20 - Missing Authorization Check on PDF Generation (IDOR)
+**Vulnerability:** An Insecure Direct Object Reference (IDOR) vulnerability was found in the `KaryawanSlipGajiController@generatePDF` endpoint. Any authenticated employee could download another employee's salary slip PDF by changing the ID in the URL, as there was no ownership or status check.
+**Learning:** Even when a controller has ownership checks on some methods (like `show`), developers may forget to apply the exact same authorization logic to other endpoints returning files or generated assets (like `generatePDF`). Route obfuscation (like `HashIdRoute` or `HashService`) is not a replacement for proper authorization checks.
+**Prevention:** Always implement explicit authorization checks (ownership and state/status) on every controller method that returns data or files for a specific model instance, regardless of how the ID is passed or obfuscated.
