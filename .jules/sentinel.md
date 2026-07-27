@@ -1,0 +1,4 @@
+## 2024-07-27 - [Fix IDOR in generatePDF for Employee Payslips]
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint `karyawan/slip-gaji/{payroll}/pdf`. Users could access and download payslips of other users or payslips that haven't been finalized yet.
+**Learning:** Endpoints generating files (like PDFs) are often overlooked for authorization checks, as developers focus on the view generation rather than access control. Route model binding or ID obfuscation is not a substitute for explicit authorization checks.
+**Prevention:** Always implement explicit ownership (`$payroll->employee_id === $employee->id`) and state checks (`in_array($payroll->status, ['approved_finance', 'paid'])`) on endpoints returning direct object references or files, even if the route key is obfuscated.
