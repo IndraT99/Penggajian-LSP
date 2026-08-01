@@ -1,0 +1,4 @@
+## 2024-05-24 - Missing Authorization in PDF Endpoints (IDOR)
+**Vulnerability:** Insecure Direct Object Reference (IDOR) in `app/Http/Controllers/Karyawan/KaryawanSlipGajiController.php` via the `generatePDF` method. A logged-in employee could view/download another employee's PDF slip gaji by changing the payroll ID in the URL.
+**Learning:** Even when routes are obfuscated, direct object reference endpoints must always have robust authorization checks. The focus on view generation (PDF output) led to the omission of the same checks present in the HTML `show` method.
+**Prevention:** For any endpoint returning files or PDFs related to a specific object, always check the authenticated user's permissions and the object's status explicitly before generating the output. Ensure it matches the authorization logic of the main resource view.
