@@ -1,0 +1,4 @@
+## 2024-05-15 - Unauthenticated access to utility setup routes
+**Vulnerability:** Utility endpoints for setup (`/setup-database`) and fixing SSL (`/fix-ssl`) were exposed without any authentication or authorization middleware. This could allow an unauthenticated attacker to trigger unauthorized database migrations (`migrate --force`) or configuration/cache resets (`config:clear`, `cache:clear`), leading to potential data manipulation, operational disruption, or Denial of Service (DoS).
+**Learning:** Always ensure endpoints executing administrative or system-level actions (especially invoking `Artisan::call`) are strictly protected and explicitly demand the highest level of authorization (e.g., `auth` and `role:admin`).
+**Prevention:** Wrap all system or utility routes in a `Route::middleware(['auth', 'role:admin'])->group(...)` in `routes/web.php` by default. Do not place them loosely in the global scope without explicit protection considerations.
