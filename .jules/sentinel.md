@@ -1,0 +1,4 @@
+## 2024-06-25 - Fix IDOR in PDF Generation
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint for employee payslips (`generatePDF` method). It relied entirely on route binding to get the object, completely lacking any ownership and access checks. A user could guess or extract other employees' hashed route IDs and download their payslips regardless of ownership or status.
+**Learning:** Endpoints that generate and return files (like PDFs) are just as susceptible to IDOR vulnerabilities as typical view endpoints. Route binding (and even hashing route IDs) is NOT a substitute for proper authorization; it only makes it slightly harder to guess IDs but does not restrict access properly.
+**Prevention:** Always implement explicit authorization and state checks (e.g., matching the resource owner to the authenticated user and validating the resource status) on *all* endpoints that return direct object references or sensitive files.
