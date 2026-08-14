@@ -1,0 +1,4 @@
+## 2025-02-27 - Unauthenticated Utility Routes Exposing Admin Actions
+**Vulnerability:** Utility routes like `/setup-database` (which ran `php artisan migrate --force`) and `/fix-ssl` were exposed publicly without any authentication or authorization checks.
+**Learning:** Development, setup, and testing utilities, even if intended for temporary use or hidden by obscurity, pose a critical Denial of Service (DoS) and unauthorized system manipulation risk if left exposed. In this architecture, they allow any user to run administrative backend tasks.
+**Prevention:** Always place utility routes that execute critical system operations (like Artisan commands or cache clearing) behind robust middleware, specifically `['auth', 'role:admin']`, and ideally, remove them entirely from production environments when they are no longer actively needed.

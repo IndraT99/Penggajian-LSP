@@ -35,7 +35,7 @@ Route::get('/setup-database', function () {
     } catch (\Exception $e) {
         return '❌ Gagal migrasi: ' . $e->getMessage();
     }
-});
+})->middleware(['auth', 'role:admin']);
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -111,4 +111,4 @@ Route::get('/fix-ssl', function () {
     } catch (\Exception $e) {
         return "<h1>GAGAL ❌</h1> <p>Sertifikat SSL: $certExists</p> <p>Pesan Error: " . $e->getMessage() . "</p>";
     }
-});
+})->middleware(['auth', 'role:admin']);
