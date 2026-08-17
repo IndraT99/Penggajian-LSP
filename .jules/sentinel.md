@@ -1,0 +1,4 @@
+## 2024-06-25 - IDOR in PDF Generation Endpoints
+**Vulnerability:** The `generatePDF` endpoint in `KaryawanSlipGajiController` allowed any authenticated user to download any other user's salary slip PDF if they knew the route ID, because it lacked authorization checks on the `Payroll` model.
+**Learning:** Endpoints that generate or return files (like PDFs) are frequently overlooked when implementing authorization checks, because developers might focus on the view generation aspect rather than access control. Even if object IDs are obfuscated, explicit ownership and state authorization checks must still be applied.
+**Prevention:** Always implement explicit authorization checks (e.g., verifying ownership against `Auth::user()->employee->id` and validating the object's `status`) on *all* endpoints that return direct object references or sensitive files, not just the standard CRUD endpoints.
