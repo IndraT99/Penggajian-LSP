@@ -1,0 +1,4 @@
+## 2025-02-28 - Explicit Authorization Missing on IDOR-prone Endpoints
+**Vulnerability:** The application is missing explicit ownership and status checks on endpoints returning direct object references (specifically, file/PDF generation for user slip gaji), allowing an authenticated user to access PDF files generated for other users' payrolls (IDOR).
+**Learning:** Route obfuscation or merely knowing the obfuscated route key is not a replacement for proper authorization. Endpoints that trigger PDF or file generation are particularly prone to this oversight as the focus might just be on document creation rather than access validation.
+**Prevention:** Always implement explicit ownership checks (`$model->owner_id === $authenticated_user->id`) and state checks (e.g., `$model->status === 'approved'`) in controller methods returning direct object references, such as PDF endpoints, even if obfuscated routing is used.
