@@ -1,0 +1,4 @@
+## 2024-08-21 - IDOR in PDF Generation
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` lacks authorization checks, allowing any authenticated user to download any payroll PDF if they can guess or obtain the obfuscated route key.
+**Learning:** Obfuscated route keys (like `HashIdRoute`) are not a substitute for explicit authorization. Endpoints returning files/PDFs are particularly prone to this oversight as developers focus on the view generation rather than access control.
+**Prevention:** Always implement explicit ownership and state checks on endpoints returning direct object references, regardless of whether the IDs are obfuscated.
