@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix IDOR in PDF generation
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user with the 'karyawan' role to access and download the salary slips (PDFs) of any other employee if they could guess the payroll ID. It also exposed non-finalized payrolls because it lacked authorization and state checks.
+**Learning:** Endpoints that generate files or PDFs are especially prone to missing authorization checks, as developers might focus solely on the view generation logic rather than access control, even if the application uses obfuscated IDs.
+**Prevention:** Always implement explicit ownership and state checks on endpoints returning direct object references or files, matching the authorization logic used in the main view endpoints (like the `show` method).
