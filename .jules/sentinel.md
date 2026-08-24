@@ -1,0 +1,4 @@
+## 2024-05-15 - Missing Authorization on PDF Generation Endpoint
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF download endpoint (`KaryawanSlipGajiController@generatePDF`). The endpoint generated a PDF for any `Payroll` ID without verifying ownership or final status.
+**Learning:** Endpoints that generate or return files (like PDFs) are frequently overlooked for authorization checks, even when standard `show` endpoints for the same resource are protected. Developers often focus on the file generation logic and assume obfuscated IDs (if used) are sufficient.
+**Prevention:** Always implement explicit ownership (`$model->user_id === $authenticated_user->id`) and status checks on ANY endpoint returning direct object references or files, mirroring the authorization logic of the main viewing endpoints. Obfuscation is not a replacement for authorization.
