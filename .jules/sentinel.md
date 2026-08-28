@@ -1,0 +1,4 @@
+## 2024-05-24 - IDOR in PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` endpoint in `KaryawanSlipGajiController` accepted a `Payroll` model directly from the route but failed to check if the authenticated user (employee) was actually the owner of that payroll record, leading to an Insecure Direct Object Reference (IDOR) vulnerability.
+**Learning:** Route model binding and obfuscated IDs (`HashIdRoute`) can give a false sense of security. Even if IDs are hashed, explicit authorization checks must be performed. Developers sometimes forget access control on endpoints that merely generate or download files/PDFs, assuming the view layer (which might have checks) is enough protection.
+**Prevention:** Always implement explicit ownership (`$payroll->employee_id !== $employee->id`) and state checks (`status` in `approved_finance`, `paid`) on all endpoints that return direct object references or files, regardless of ID obfuscation.
