@@ -1,0 +1,4 @@
+## 2025-02-28 - Unprotected Setup Routes in Web File
+**Vulnerability:** Setup and utility routes (e.g., `/setup-database`, `/fix-ssl`) that trigger destructive `Artisan` commands (such as `migrate --force` or clearing caches) were exposed publicly in `routes/web.php` without authentication or authorization.
+**Learning:** Developers often place utility routes in the global scope of `routes/web.php` for convenience during initial deployment or testing, neglecting to restrict access to them afterwards. This can lead to denial-of-service, data manipulation, or information disclosure if accessed maliciously.
+**Prevention:** Always place utility, setup, or administrative routes behind robust authentication and authorization middleware groups (e.g., `['auth', 'role:admin']`) to ensure only authorized personnel can access them.
