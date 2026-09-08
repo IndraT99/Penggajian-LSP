@@ -1,0 +1,4 @@
+## 2024-10-27 - Fix IDOR in PDF Generation
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` used route model binding for the `Payroll` record but failed to check if the authenticated employee owned that record or if the payroll was in a finalized state before generating and streaming the PDF. This allowed direct access to other employees' payslips by guessing IDs.
+**Learning:** Endpoints that return files or generate PDFs are frequently overlooked for authorization checks, as developers often focus on the view generation aspect rather than access control. Route model binding obfuscation does not replace actual authorization.
+**Prevention:** Always implement explicit ownership (`employee_id`) and state (`status`) checks on endpoints that return direct object references, including file downloads and PDF streams.
