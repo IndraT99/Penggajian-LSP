@@ -1,0 +1,4 @@
+## 2024-05-23 - IDOR in PDF Generation Endpoint
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on the PDF generation route (`generatePDF` in `KaryawanSlipGajiController.php`). Endpoints returning files/PDFs lack authorization and ownership checks which allows unauthorized users to access and download PDFs of other employees' pay slips.
+**Learning:** Even if an object is accessed directly via route model binding, explicit authorization and ownership checks against the authenticated user must always be implemented. Endpoints returning files/PDFs are especially prone to this oversight as developers might focus on view generation rather than access control. Route obfuscation using HashIdRoute is not a substitute for proper authorization.
+**Prevention:** Always verify authorization and ownership checks on all endpoints returning direct object references or sensitive files. Check the state/status of objects to prevent access to unfinalized or restricted data.
