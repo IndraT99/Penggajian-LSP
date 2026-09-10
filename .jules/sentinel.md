@@ -1,0 +1,4 @@
+## 2025-02-28 - Insecure Direct Object Reference in PDF Endpoint
+**Vulnerability:** IDOR in `KaryawanSlipGajiController@generatePDF` endpoint allowed users to download PDF payroll slips of other employees because ownership and approval statuses weren't checked.
+**Learning:** Endpoints that generate or return files (like PDFs) are frequently overlooked when checking for authorization/IDOR compared to standard views/endpoints, likely because developers focus on file generation logic instead of access control logic.
+**Prevention:** Always explicitly check object ownership and status (authorization) before allowing downloads or direct object retrieval, regardless of whether the controller logic returns a view or streams a file. Route model binding obfuscation is not sufficient authorization.
