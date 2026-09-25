@@ -1,0 +1,4 @@
+## 2025-02-21 - Fix IDOR in PDF Generation
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on PDF generation endpoint (`/karyawan/slip-gaji/{payroll}/pdf`) allowed authenticated users to download any employee's payroll slip by changing the ID in the URL, as no authorization checks were performed.
+**Learning:** Endpoints that generate or return files (like PDFs) using external packages (e.g., `laravel-dompdf`) are highly prone to missing authorization checks, as developers often focus on the view generation rather than access control, even when route model binding is used. Route obfuscation (like `HashService`) is not a substitute for proper authorization.
+**Prevention:** Always implement explicit ownership and state checks on all endpoints returning direct object references or files, ensuring the authenticated user has permission to access the specific requested resource.
