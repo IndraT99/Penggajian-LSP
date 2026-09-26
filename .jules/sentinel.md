@@ -1,0 +1,4 @@
+## 2024-05-24 - Insecure Direct Object Reference in PDF Generation Endpoints
+**Vulnerability:** Endpoints responsible for generating and returning PDF files (like `/slip-gaji/{payroll}/pdf`) did not include explicit authorization checks for record ownership and final status, leading to an Insecure Direct Object Reference (IDOR) vulnerability.
+**Learning:** Even if an object is accessed directly via route model binding and the primary route has authentication middleware, endpoints returning files/PDFs are prone to oversight as the focus is on file generation, not access control. Route obfuscation like `HashService` is not a replacement for proper authorization.
+**Prevention:** Always implement explicit ownership checks (e.g., `$payroll->employee_id !== $employee->id`) and status verifications (e.g., `in_array($payroll->status, ['approved_finance', 'paid'])`) on endpoints that return direct object references, regardless of whether the IDs are obfuscated or not.
