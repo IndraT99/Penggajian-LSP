@@ -1,0 +1,4 @@
+## 2024-09-28 - Missing Authorization on PDF Download Endpoint
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on the `KaryawanSlipGajiController@generatePDF` endpoint. The route model binding loaded the `Payroll` record, but the controller directly generated and returned a PDF without verifying if the authenticated user owned the payroll record or if the record was in a state allowed to be viewed (`approved_finance` or `paid`).
+**Learning:** Endpoints that generate files (like PDFs) or return direct object representations often lack authorization checks because developers focus on the view/file generation logic. Route obfuscation (like `HashIdRoute`) is not sufficient protection against IDOR.
+**Prevention:** Always explicitly check authorization (e.g., `if ($payroll->employee_id !== $employee->id)`) and valid state (`if (!in_array($payroll->status, ...))`) before generating sensitive files or views, even if route keys are obfuscated.
