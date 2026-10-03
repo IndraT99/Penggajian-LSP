@@ -1,0 +1,5 @@
+
+## 2024-05-24 - Missing Authorization on PDF Generation Endpoint
+**Vulnerability:** The `generatePDF` method in `KaryawanSlipGajiController` allowed any authenticated user to download the payroll PDF of any other user (IDOR). While the `show` method properly checked authorization, the PDF generation endpoint failed to implement the same access control.
+**Learning:** Endpoints that generate or return files (like PDFs, Excel, etc.) are commonly overlooked during access control implementation. Developers tend to secure the web view (`show` method) but forget to secure the direct file download endpoint, especially when the endpoint uses an obfuscated or direct ID via route model binding. Route obfuscation (`HashService`) is not a replacement for proper authorization.
+**Prevention:** Always implement explicit ownership, state checks, and authorization rules on *all* endpoints that return direct object references, regardless of whether it's an API, HTML view, or file download. Ensure state checks (like `approved_finance`, `paid`) are consistent across related endpoints to prevent bypassing restrictions.
