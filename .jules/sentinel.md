@@ -1,0 +1,4 @@
+## 2024-05-31 - [Insecure Direct Object Reference in PDF Generator]
+**Vulnerability:** The `generatePDF` endpoint in `KaryawanSlipGajiController` accepted a `Payroll` object directly but lacked authorization and state validation checks, allowing any authenticated user to potentially download payslips of other employees or access unfinalized data (IDOR).
+**Learning:** Endpoints that generate files/documents often overlook authorization checks because the developer's focus shifts from access control to file generation formatting, especially when relying on Route Model Binding to inject objects directly. Furthermore, stateful models require status checks (e.g., 'paid', 'approved') in addition to ownership checks.
+**Prevention:** Always explicitly check object ownership (`$object->owner_id === Auth::user()->id`) and status constraints on every endpoint that retrieves or generates data from an injected model object, even when IDs are obfuscated.
