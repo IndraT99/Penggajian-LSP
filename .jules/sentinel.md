@@ -1,0 +1,4 @@
+## 2024-05-24 - [Fix IDOR in Karyawan PDF Generation]
+**Vulnerability:** Insecure Direct Object Reference (IDOR) in `KaryawanSlipGajiController@generatePDF` where a user could directly request a PDF generation for any `Payroll` object ID without authorization and state checks.
+**Learning:** Endpoints that return files/PDFs using direct object reference route binding must explicitly verify ownership (matching `$payroll->employee_id` with authenticated user's `$employee->id`) and resource state (`$payroll->status`) before rendering. Developers might focus only on view generation rather than access control.
+**Prevention:** Always implement explicit ownership and state checks on endpoints returning direct object references or files. Use policy classes or explicit assertions inside the controller method.
