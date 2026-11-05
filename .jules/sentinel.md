@@ -1,0 +1,7 @@
+## 2024-05-18 - Fix Insecure Direct Object Reference (IDOR) in Payroll PDF Generation
+
+**Vulnerability:** The `generatePDF` endpoint in `KaryawanSlipGajiController` accepted a `Payroll` object directly without checking if the authenticated user owned that specific payroll record or if the record was in a finalized state (`approved_finance` or `paid`). This allowed any authenticated user to potentially guess the ID of another user's payroll record and generate a PDF of it, leaking sensitive salary information.
+
+**Learning:** When using Route Model Binding, Laravel automatically fetches the object from the database, but it does NOT automatically authorize the user to access it. Endpoints that generate files (like PDFs) or perform actions on models are especially prone to this oversight, as developers might focus on the file generation logic and forget the access control checks. Obfuscated IDs (like with `HashService`) reduce the risk of guessing IDs, but do not replace the need for proper authorization.
+
+**Prevention:** Always implement explicit authorization checks on endpoints that return direct object references. Use explicit checks against the authenticated user's ID or implement policies (e.g., `Gate::authorize('view', $payroll)`) to ensure the user has permission to access the resource. Always verify state requirements as well, such as confirming the record status is finalized.
